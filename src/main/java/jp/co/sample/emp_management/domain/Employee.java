@@ -19,6 +19,8 @@ public class Employee {
 	private String gender;
 	/** 入社日 */
 	private Date hireDate;
+	/** フォーマット済み入社日*/
+	private String formatHireDate;
 	/** メールアドレス */
 	private String mailAddress;
 	/** 郵便番号 */
@@ -125,6 +127,14 @@ public class Employee {
 		this.hireDate = hireDate;
 	}
 
+	public String getFormatHireDate() {
+		return formatHireDate;
+	}
+
+	public void setFormatHireDate(String formatHireDate) {
+		this.formatHireDate = formatHireDate;
+	}
+
 	public String getMailAddress() {
 		return mailAddress;
 	}
@@ -184,9 +194,9 @@ public class Employee {
 	@Override
 	public String toString() {
 		return "Employee [id=" + id + ", name=" + name + ", image=" + image + ", gender=" + gender + ", hireDate="
-				+ hireDate + ", mailAddress=" + mailAddress + ", zipCode=" + zipCode + ", address=" + address
-				+ ", telephone=" + telephone + ", salary=" + salary + ", characteristics=" + characteristics
-				+ ", dependentsCount=" + dependentsCount + "]";
+				+ hireDate + ", formatHireDate=" + formatHireDate + ", mailAddress=" + mailAddress + ", zipCode="
+				+ zipCode + ", address=" + address + ", telephone=" + telephone + ", salary=" + salary
+				+ ", characteristics=" + characteristics + ", dependentsCount=" + dependentsCount + "]";
 	}
 
 }

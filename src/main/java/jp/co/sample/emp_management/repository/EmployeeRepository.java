@@ -1,5 +1,6 @@
 package jp.co.sample.emp_management.repository;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,10 @@ public class EmployeeRepository {
 		employee.setImage(rs.getString("image"));
 		employee.setGender(rs.getString("gender"));
 		employee.setHireDate(rs.getDate("hire_date"));
+		
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日");
+		employee.setFormatHireDate(sdf.format(rs.getDate("hire_date")));
+		
 		employee.setMailAddress(rs.getString("mail_address"));
 		employee.setZipCode(rs.getString("zip_code"));
 		employee.setAddress(rs.getString("address"));
