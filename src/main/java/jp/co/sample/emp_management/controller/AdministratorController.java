@@ -66,6 +66,8 @@ public class AdministratorController {
 	 * 
 	 * @param form
 	 *            管理者情報用フォーム
+	 * @param result
+	 *  		     入力値チェックの結果を保持するためのパラメータ
 	 * @return ログイン画面へリダイレクト
 	 */
 	@RequestMapping("/insert")
