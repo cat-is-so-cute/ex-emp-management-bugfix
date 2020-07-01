@@ -77,9 +77,13 @@ public class AdministratorController {
 											Model model) {
 
 		if(administratorService.searchByMailAddress(form.getMailAddress()) != null) {
-			FieldError duplicationError = new FieldError(result.getObjectName(), "mailAddress", "このメールアドレスは既に使われています");
-			
-			result.addError(duplicationError);
+			FieldError disagreementError = new FieldError(result.getObjectName(), "mailAddress", "このメールアドレスは既に使われています");
+			result.addError(disagreementError);
+		}
+		
+		if(!form.getMailAddress().equals(form.getConfirmationPassword())) {
+			FieldError duplicationError = new FieldError(result.getObjectName(), "confirmationPassword", "確認用パスワードが一致しません");
+			result.addError(duplicationError);			
 		}
 		
 		if(result.hasErrors()) {
