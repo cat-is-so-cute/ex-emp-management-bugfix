@@ -4,6 +4,9 @@ import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -32,6 +35,14 @@ public class AdministratorController {
 	
 	@Autowired
 	private HttpSession session;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
+	
+	@Bean
+	PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
 
 	/**
 	 * 使用するフォームオブジェクトをリクエストスコープに格納する.
@@ -81,17 +92,25 @@ public class AdministratorController {
 			result.addError(disagreementError);
 		}
 		
-		if(!form.getMailAddress().equals(form.getConfirmationPassword())) {
+		if(!form.getPassword().equals(form.getConfirmationPassword())) {
 			FieldError duplicationError = new FieldError(result.getObjectName(), "confirmationPassword", "確認用パスワードが一致しません");
 			result.addError(duplicationError);			
 		}
 		
-		if(result.hasErrors()) {
-			return "administrator/insert";
-		}
+//		if(result.hasErrors()) {
+//			return "administrator/insert";
+//		}
+		
+		System.out.println("test1: " + form.toString());
+
 		
 		Administrator administrator = new Administrator();
 		// フォームからドメインにプロパティ値をコピー
+		
+		form.setPassword(passwordEncoder.encode(form.getPassword()));
+		
+		System.out.println("test2: " + form.toString());
+		
 		BeanUtils.copyProperties(form, administrator);
 		administratorService.insert(administrator);
 		return "redirect:/";
@@ -120,13 +139,14 @@ public class AdministratorController {
 	 * @return ログイン後の従業員一覧画面
 	 */
 	@RequestMapping("/login")
-	public String login(LoginForm form, BindingResult result, Model model) {
-		Administrator administrator = administratorService.login(form.getMailAddress(), form.getPassword());
-		if (administrator == null) {
+	public String login(LoginForm form, BindingResult result, Model model) {		
+		boolean authenticate = administratorService.authenticate(form.getMailAddress(), form.getPassword());
+		if (authenticate == false) {
 			model.addAttribute("errorMessage", "メールアドレスまたはパスワードが不正です。");
 			return toLogin();
 		}
 		
+		Administrator administrator = administratorService.login(form.getMailAddress());
 		session.setAttribute("administratorName", administrator.getName());
 		return "forward:/employee/showList";
 	}

@@ -8,6 +8,7 @@ import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 
 import jp.co.sample.emp_management.domain.Administrator;
@@ -32,9 +33,16 @@ public class AdministratorRepository {
 		administrator.setPassword(rs.getString("password"));
 		return administrator;
 	};
-
+	
+	private static final RowMapper<String> HASH_PASS_ROW_MAPPER = (rs, i) -> {
+		return rs.getString("password");
+	};
+	
 	@Autowired
 	private NamedParameterJdbcTemplate template;
+	
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	/**
 	 * メールアドレスとパスワードから管理者情報を取得します.
@@ -43,14 +51,19 @@ public class AdministratorRepository {
 	 * @param passward    パスワード
 	 * @return 管理者情報 存在しない場合はnullを返します
 	 */
-	public Administrator findByMailAddressAndPassward(String mailAddress, String password) {
-		String sql = "select id,name,mail_address,password from administrators where mail_address= :mailAddress and password= :password";
-		SqlParameterSource param = new MapSqlParameterSource().addValue("mailAddress", mailAddress).addValue("password", password);
-		List<Administrator> administratorList = template.query(sql, param, ADMINISTRATOR_ROW_MAPPER);
-		if (administratorList.size() == 0) {
-			return null;
-		}
-		return administratorList.get(0);
+	public Administrator getIdAndNameByMailAddress(String mailAddress) {
+		String sql = "select id, name, mail_address, password from administrators where mail_address= :mailAddress;";
+		SqlParameterSource param = new MapSqlParameterSource().addValue("mailAddress", mailAddress);
+		Administrator administrator = template.queryForObject(sql, param, ADMINISTRATOR_ROW_MAPPER);
+
+		return administrator;
+	}
+	
+	public String getHashPasswordByMailAddress(String mailAddress) {
+		String sql = "select password from administrators where mail_address= :mailAddress";
+		SqlParameterSource param = new MapSqlParameterSource().addValue("mailAddress", mailAddress);
+		
+		return template.queryForObject(sql, param, HASH_PASS_ROW_MAPPER);
 	}
 
 	/**
