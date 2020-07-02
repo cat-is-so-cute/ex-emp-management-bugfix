@@ -9,10 +9,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import jp.co.sample.emp_management.domain.Employee;
 import jp.co.sample.emp_management.form.UpdateEmployeeForm;
 import jp.co.sample.emp_management.service.EmployeeService;
+import net.arnx.jsonic.JSON;
 
 /**
  * 従業員情報を操作するコントローラー.
@@ -50,7 +52,16 @@ public class EmployeeController {
 	public String showList(Model model) {
 		List<Employee> employeeList = employeeService.showList();
 		model.addAttribute("employeeList", employeeList);
+		
 		return "employee/list";
+	}
+	
+	@ResponseBody
+	@RequestMapping("/getEmployees")
+	public String getEmployees() {
+		List<String> employeeList = employeeService.searchAllEmployeesName();
+
+		return JSON.encode(employeeList);
 	}
 
 	

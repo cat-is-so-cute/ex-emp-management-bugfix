@@ -41,6 +41,10 @@ public class EmployeeRepository {
 		employee.setDependentsCount(rs.getInt("dependents_count"));
 		return employee;
 	};
+	
+	private static final RowMapper<String> EMPLOYEE_NAME_ROW_MAPPER = (rs, i) -> {
+		return rs.getString("name");
+	};
 
 	@Autowired
 	private NamedParameterJdbcTemplate template;
@@ -94,5 +98,11 @@ public class EmployeeRepository {
 		employees = template.query(sql, param, EMPLOYEE_ROW_MAPPER);
 		
 		return employees;
+	}
+	
+	public List<String> findAllEmployeesName() {
+		String sql = "SELECT name FROM employees ORDER BY hire_date;";
+		
+		return template.query(sql, EMPLOYEE_NAME_ROW_MAPPER);
 	}
 }
